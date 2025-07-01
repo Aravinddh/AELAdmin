@@ -87,3 +87,62 @@ exports.getClosestSegments = async (req, res) => {
   const closest = segmentInfos.slice(0, 4).sort((a, b) => a.start - b.start);
   res.json({ success: true, segments: closest });
 };
+
+
+exports.getFormsForVideo = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const submission = await TimestampSubmission.findOne({ videoId });
+    if (!submission) {
+      return res.status(404).json({ success: false, message: 'No forms found for this video.' });
+    }
+    return res.json({ success: true, forms: submission.selections });
+  } catch (err) {
+    console.error('Error fetching forms:', err.message);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+exports.updateFormById = async (req, res) => {
+  try {
+    const { formId } = req.params;
+    const { videoId, timestamp, selectedSegment } = req.body;
+    const submission = await TimestampSubmission.findOne({ videoId });
+    if (!submission) {
+      return res.status(404).json({ success: false, message: 'Submission not found.' });
+    }
+    const form = submission.selections.find(sel => sel.formId === formId);
+    if (!form) {
+      return res.status(404).json({ success: false, message: 'Form not found.' });
+    }
+    if (timestamp !== undefined) form.timestamp = timestamp;
+    if (selectedSegment !== undefined) form.selectedSegment = selectedSegment;
+    await submission.save();
+    return res.json({ success: true, message: 'Form updated successfully.' });
+  } catch (err) {
+    console.error('Error updating form:', err.message);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+exports.deleteFormById = async (req, res) => {
+  try {
+    const { formId } = req.params;
+    const { videoId } = req.body;
+    const submission = await TimestampSubmission.findOne({ videoId });
+    if (!submission) {
+      return res.status(404).json({ success: false, message: 'Submission not found.' });
+    }
+    const initialLength = submission.selections.length;
+    submission.selections = submission.selections.filter(sel => sel.formId !== formId);
+    if (submission.selections.length === initialLength) {
+      return res.status(404).json({ success: false, message: 'Form not found.' });
+    }
+    await submission.save();
+    return res.json({ success: true, message: 'Form deleted successfully.' });
+  } catch (err) {
+    console.error('Error deleting form:', err.message);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

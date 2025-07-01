@@ -1,21 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
-const fallbackImage = '/pause-fallback.png'; // make sure this exists in `public/`
-
+const fallbackImage = '/pause-fallback.png'; 
 const LandingPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:5000/api/videos')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch videos');
+        return res.json();
+      })
       .then(data => {
+        console.log('Fetched videos:', data);
         setVideos(data);
         setLoading(false);
+        setError('');
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        setLoading(false);
+        setError('Could not load videos. Please check your server and network connection.');
+        console.error('Error fetching videos:', err);
+      });
   }, []);
 
   return (
@@ -26,6 +35,10 @@ const LandingPage = () => {
 
       {loading ? (
         <p style={{ textAlign: 'center' }}>Loading videos...</p>
+      ) : error ? (
+        <p style={{ textAlign: 'center', color: 'red', fontWeight: 'bold' }}>{error}</p>
+      ) : videos.length === 0 ? (
+        <p style={{ textAlign: 'center', color: '#fff' }}>No videos found.</p>
       ) : (
         <div
           style={{
