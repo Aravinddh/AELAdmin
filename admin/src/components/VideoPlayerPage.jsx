@@ -6,6 +6,8 @@ import EditDeletePanel from './EditDeletePanel';
 
 const MODES = { VIEW: 'view', EDIT: 'edit', DELETE: 'delete' };
 
+const MODES = { VIEW: 'view', EDIT: 'edit', DELETE: 'delete' };
+
 const VideoPlayerPage = () => {
   const { videoId } = useParams();
   const navigate = useNavigate();
@@ -17,6 +19,11 @@ const VideoPlayerPage = () => {
   const [forms, setForms] = useState([
     { timestamp: 0, selectedSegment: null, formId: '', segments: [], videoId }
   ]);
+  const [mode, setMode] = useState(MODES.VIEW);
+  const [fetchedForms, setFetchedForms] = useState([]);
+  const [selectedForm, setSelectedForm] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const [deleteStatus, setDeleteStatus] = useState({ success: false, error: '' });
 
   // Edit/Delete state
   const [mode, setMode] = useState(MODES.VIEW);
@@ -38,7 +45,57 @@ const VideoPlayerPage = () => {
       .catch(() => console.error('Error fetching video data'));
   }, [videoId]);
 
+<<<<<<< HEAD
   // Form management functions
+=======
+  useEffect(() => {
+    if (videoData?.url && Hls.isSupported()) {
+      const hls = new Hls();
+      hlsRef.current = hls;
+      hls.loadSource(`http://localhost:5000${videoData.url}`);
+      hls.attachMedia(videoRef.current);
+      return () => {
+        hls.destroy();
+        hlsRef.current = null;
+      };
+    }
+  }, [videoData]);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      const handleLoadedMetadata = () => {
+        setDuration(videoRef.current.duration || 0);
+      };
+      videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+      return () => {
+        if (videoRef.current) {
+          videoRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        }
+      };
+    }
+  }, [videoData]);
+
+  const fetchClosestSegments = async (formIndex, timestampValue) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/timestamp/closest-segments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId, timestamp: timestampValue }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setForms(prevForms =>
+          prevForms.map((form, idx) =>
+            idx === formIndex ? { ...form, segments: data.segments } : form
+          )
+        );
+      }
+    } catch {
+      console.error('Error fetching closest segments');
+    }
+  };
+
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
   const updateForm = (index, key, value) => {
     setForms(prevForms =>
       prevForms.map((form, idx) =>
@@ -101,7 +158,10 @@ const VideoPlayerPage = () => {
     }
   };
 
+<<<<<<< HEAD
   // Edit/Delete functions
+=======
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
   const fetchForms = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/timestamp/${videoId}`);
@@ -135,8 +195,13 @@ const VideoPlayerPage = () => {
     setEditForm({ ...form });
   };
 
+<<<<<<< HEAD
   const handleEditFormChange = (changes) => {
     setEditForm(prev => ({ ...prev, ...changes }));
+=======
+  const handleEditFormChange = (key, value) => {
+    setEditForm(prev => ({ ...prev, [key]: value }));
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
   };
 
   const handleEditFormSubmit = async (e) => {
@@ -201,6 +266,7 @@ const VideoPlayerPage = () => {
       setDeleteStatus({ success: false, error: 'Delete failed' });
     }
   };
+<<<<<<< HEAD
 
   const handleCancel = () => {
     setMode(MODES.VIEW);
@@ -212,13 +278,24 @@ const VideoPlayerPage = () => {
   const handleBack = () => {
     navigate('/');
   };
+=======
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
 
   if (!videoData) return <div style={{ padding: '2rem', color: '#fff' }}>Loading video...</div>;
 
   return (
     <div style={{ padding: '2rem', display: 'flex', gap: '2rem', alignItems: 'flex-start', position: 'relative', background: '#111', minHeight: '100vh' }}>
       <div style={{ width: '60%' }}>
+<<<<<<< HEAD
         <VideoPlayer videoData={videoData} onDurationChange={setDuration} />
+=======
+        <video ref={videoRef} controls style={{ width: '100%' }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+          <button onClick={() => navigate('/')} style={{ background: '#444', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>← Back</button>
+          <button onClick={handleEditClick} style={{ background: '#f2b705', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>✏️ Edit</button>
+          <button onClick={handleDeleteClick} style={{ background: '#e35b5b', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>🗑 Delete</button>
+        </div>
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
       </div>
 
       {mode === MODES.VIEW ? (
@@ -234,6 +311,7 @@ const VideoPlayerPage = () => {
               formErrors={formErrors}
               isEditMode={false}
             />
+<<<<<<< HEAD
           ))}
 
           <button
@@ -292,6 +370,178 @@ const VideoPlayerPage = () => {
           onCancel={handleCancel}
           onBack={handleBack}
         />
+=======
+            {formErrors[formIndex]?.formId && (
+              <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.3rem' }}>
+                Please enter a form ID.
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => handleRemoveForm(formIndex)}
+              style={{
+                marginTop: '1rem',
+                background: '#e35b5b',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                padding: '0.4rem 1rem',
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              🗑 Remove
+            </button>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          onClick={handleAddForm}
+          style={{
+            background: '#3ec46d',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.5rem 1.2rem',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}
+        >
+          + Add
+        </button>
+
+        <button
+          type="submit"
+          disabled={submitting || duration === 0}
+          style={{
+            background: 'linear-gradient(90deg, #535bf2 0%, #6e8efb 100%)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.8rem 1.5rem',
+            fontSize: '1.1rem',
+            fontWeight: 'bold',
+            cursor: submitting || duration === 0 ? 'not-allowed' : 'pointer',
+            boxShadow: '0 2px 8px rgba(83,91,242,0.15)',
+            transition: 'background 0.2s',
+          }}
+        >
+          {submitting ? 'Submitting...' : 'Submit All'}
+        </button>
+        {success && <span style={{ color: 'lightgreen', fontWeight: 'bold' }}>Form submitted successfully!</span>}
+      </form>
+
+      {mode === MODES.EDIT && (
+        <div style={{ marginTop: '2rem', background: '#222', padding: '1rem', borderRadius: '8px' }}>
+          <h3 style={{ color: '#fff' }}>Edit a Form</h3>
+          {fetchedForms.length === 0 ? (
+            <div style={{ color: '#fff' }}>No forms found for this video.</div>
+          ) : !selectedForm ? (
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {fetchedForms.map((form) => (
+                <li key={form.formId} style={{ marginBottom: 8 }}>
+                  <button onClick={() => handleSelectEditForm(form)} style={{ background: '#535bf2', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 1rem', cursor: 'pointer' }}>
+                    Edit Form ID: {form.formId} (Timestamp: {form.timestamp.toFixed(1)}s)
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <form onSubmit={handleEditFormSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <label style={{ color: '#fff' }}>
+                Timestamp:
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration}
+                    step="0.1"
+                    value={editForm.timestamp}
+                    onChange={async e => {
+                      const value = Number(e.target.value);
+                      handleEditFormChange('timestamp', value);
+                      try {
+                        const res = await fetch('http://localhost:5000/api/timestamp/closest-segments', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ videoId, timestamp: value }),
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          setEditForm(prev => ({
+                            ...prev,
+                            segments: data.segments,
+                            selectedSegment: 0,
+                          }));
+                        }
+                      } catch { /* ignore */ }
+                    }}
+                    disabled={duration === 0}
+                    style={{ flex: 1, accentColor: '#535bf2', height: '4px' }}
+                  />
+                  <span style={{ color: '#535bf2', fontWeight: 'bold', minWidth: 40 }}>{editForm.timestamp?.toFixed(1)}s</span>
+                </div>
+              </label>
+              <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#6e8efb' }}>
+                Closest Segments (Select One):
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {(editForm.segments || []).map((seg, idx) => (
+                  <li key={idx} style={{ marginBottom: 6 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#fff' }}>
+                      <input
+                        type="radio"
+                        name="edit-segment"
+                        value={idx}
+                        checked={editForm.selectedSegment === idx}
+                        onChange={() => setEditForm(prev => ({ ...prev, selectedSegment: idx }))}
+                      />
+                      <span style={{ fontWeight: 'bold' }}>
+                        Segment {idx + 1}: {seg.start.toFixed(2)}s - {(seg.start + seg.duration).toFixed(2)}s
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+              <label style={{ color: '#fff' }}>
+                Segment:
+                <div>{editForm.segments && editForm.selectedSegment != null && editForm.segments[editForm.selectedSegment] ? `Start: ${editForm.segments[editForm.selectedSegment].start.toFixed(2)}s, End: ${(editForm.segments[editForm.selectedSegment].start + editForm.segments[editForm.selectedSegment].duration).toFixed(2)}s` : 'None'}</div>
+              </label>
+              <button type="submit" style={{ background: '#3ec46d', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>Save Changes</button>
+              <button type="button" onClick={() => { setMode(MODES.VIEW); setSelectedForm(null); setEditForm(null); }} style={{ background: '#e35b5b', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>Cancel</button>
+            </form>
+          )}
+        </div>
+      )}
+
+      {mode === MODES.DELETE && (
+        <div style={{ marginTop: '2rem', background: '#222', padding: '1rem', borderRadius: '8px' }}>
+          <h3 style={{ color: '#fff' }}>Delete a Form</h3>
+          {fetchedForms.length === 0 ? (
+            <div style={{ color: '#fff' }}>No forms found for this video.</div>
+          ) : !selectedForm ? (
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {fetchedForms.map((form) => (
+                <li key={form.formId} style={{ marginBottom: 8 }}>
+                  <button onClick={() => handleSelectDeleteForm(form)} style={{ background: '#e35b5b', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 1rem', cursor: 'pointer' }}>
+                    Delete Form ID: {form.formId} (Timestamp: {form.timestamp.toFixed(1)}s)
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>
+              <div style={{ color: '#fff', marginBottom: 8 }}>Are you sure you want to delete Form ID: {selectedForm}?</div>
+              <button onClick={handleDeleteForm} style={{ background: '#e35b5b', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 'bold', cursor: 'pointer', marginRight: 8 }}>Confirm Delete</button>
+              <button onClick={() => { setMode(MODES.VIEW); setSelectedForm(null); setDeleteStatus({ success: false, error: '' }); }} style={{ background: '#535bf2', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1.2rem', fontWeight: 'bold', cursor: 'pointer' }}>Cancel</button>
+              {deleteStatus.success && <div style={{ color: 'lightgreen', marginTop: 8 }}>Form deleted successfully!</div>}
+              {deleteStatus.error && <div style={{ color: 'red', marginTop: 8 }}>{deleteStatus.error}</div>}
+            </div>
+          )}
+        </div>
+>>>>>>> 7baba6163cf14250fc550a259c8e11c129926a71
       )}
     </div>
   );

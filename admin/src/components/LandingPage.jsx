@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 
-const fallbackImage = '/pause-fallback.png'; // make sure this exists in `public/`
-
+const fallbackImage = '/pause-fallback.png'; 
 const LandingPage = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
