@@ -5,6 +5,7 @@ const path = require('path');
 
 const videoRoutes = require('./routes/videoRoutes');
 const timestampRoutes = require('./routes/timestampRoutes');
+const m3u8videoRoutes =  require('./routes/m3u8videoRoutes')
 
 const app = express();
 const PORT = 5000;
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use('/api/videos', videoRoutes);
+app.use('/api/m3u8-with-markers',m3u8videoRoutes);
 app.use('/api/timestamp', timestampRoutes);
 
 app.listen(PORT, () => {

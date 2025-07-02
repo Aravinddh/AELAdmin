@@ -406,7 +406,10 @@ const VideoPlayerPage = () => {
                     onChange={async e => {
                       const value = Number(e.target.value);
                       handleEditFormChange('timestamp', value);
+<<<<<<< HEAD
                       // Fetch closest segments for the new timestamp
+=======
+>>>>>>> e143e2d (Integrated have completed)
                       try {
                         const res = await fetch('http://localhost:5000/api/timestamp/closest-segments', {
                           method: 'POST',
