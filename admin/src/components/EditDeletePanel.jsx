@@ -40,13 +40,6 @@ const EditDeletePanel = ({
 
   return (
     <div style={{ width: '40%', display: 'flex', flexDirection: 'column', gap: '2rem', background: '#222', padding: '2rem', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.3)' }}>
-      {/* Action Buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <button onClick={onBack} style={{ background: '#444', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>← Back</button>
-        <button onClick={onEditClick} style={{ background: '#f2b705', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>✏️ Edit</button>
-        <button onClick={onDeleteClick} style={{ background: '#e35b5b', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '8px', cursor: 'pointer' }}>🗑 Delete</button>
-      </div>
-
       {/* Edit Mode */}
       {mode === MODES.EDIT && (
         <div style={{ marginTop: '2rem', background: '#222', padding: '1rem', borderRadius: '8px' }}>
