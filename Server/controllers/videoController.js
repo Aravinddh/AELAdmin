@@ -39,4 +39,7 @@ exports.getVideoById = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3e2051c84dfa3c3c84d2ada0d1a8da7df33da98f

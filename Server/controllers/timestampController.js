@@ -56,7 +56,6 @@ exports.submitTimestamp = async (req, res) => {
 
 exports.getClosestSegments = async (req, res) => {
   const { videoId, timestamp } = req.body;
-  console.log(videoId);
   const video = await Movie.findById(videoId);
   if (!video)
     return res.status(404).json({ success: false, message: "Video not found" });
