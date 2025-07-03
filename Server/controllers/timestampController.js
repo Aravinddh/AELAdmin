@@ -88,11 +88,7 @@ exports.getClosestSegments = async (req, res) => {
   res.json({ success: true, segments: closest });
 };
 
-<<<<<<< HEAD
-// Get all forms (selections) for a video
-=======
 
->>>>>>> e143e2d (Integrated have completed)
 exports.getFormsForVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -107,10 +103,6 @@ exports.getFormsForVideo = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// Update a form (selection) by formId
-=======
->>>>>>> e143e2d (Integrated have completed)
 exports.updateFormById = async (req, res) => {
   try {
     const { formId } = req.params;
@@ -133,11 +125,6 @@ exports.updateFormById = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-// Delete a form (selection) by formId
-=======
-
->>>>>>> e143e2d (Integrated have completed)
 exports.deleteFormById = async (req, res) => {
   try {
     const { formId } = req.params;
@@ -157,8 +144,6 @@ exports.deleteFormById = async (req, res) => {
     console.error('Error deleting form:', err.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
-<<<<<<< HEAD
+
 };
-=======
-};
->>>>>>> e143e2d (Integrated have completed)
+
