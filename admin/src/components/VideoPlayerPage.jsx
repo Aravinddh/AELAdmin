@@ -56,50 +56,82 @@ const VideoPlayerPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setSuccess(false);
+  e.preventDefault();
+  setSubmitting(true);
+  setSuccess(false);
 
-    const errors = forms.map(f => ({
+  // 1. Fetch existing segments from DB
+  let existingSegments = new Set();
+  try {
+    const res = await fetch(`http://localhost:5000/api/timestamp/${videoId}`);
+    const data = await res.json();
+    if (data.success) {
+      data.forms.forEach(f => {
+        if (f.selectedSegment?.segment) {
+          existingSegments.add(f.selectedSegment.segment);
+        }
+      });
+    }
+  } catch {
+    console.error("Error fetching existing segments");
+  }
+
+  const seenInForm = new Set();
+
+  const errors = forms.map((f, idx) => {
+    const seg = f.segments[f.selectedSegment]; 
+    const segmentName = seg?.uri;
+    const isDuplicateInDB = segmentName && existingSegments.has(segmentName);
+    const isDuplicateInForm = segmentName && seenInForm.has(segmentName);
+
+    if (segmentName) {
+      seenInForm.add(segmentName); 
+    }
+
+    return {
       formId: !f.formId.trim(),
       selectedSegment: f.selectedSegment === null,
-    }));
-
-    setFormErrors(errors);
-
-    const hasErrors = errors.some(err => err.formId || err.selectedSegment);
-    if (hasErrors) {
-      setSubmitting(false);
-      return;
-    }
-
-    const payload = {
-      videoId,
-      selections: forms.map(f => ({
-        timestamp: f.timestamp,
-        formId: f.formId,
-        selectedSegment: f.segments[f.selectedSegment]
-      }))
+      segmentConflict: isDuplicateInDB || isDuplicateInForm,
     };
+  });
 
-    try {
-      const res = await fetch('http://localhost:5000/api/timestamp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+  setFormErrors(errors);
 
-      if (res.ok) {
-        setSuccess(true);
-        setForms([{ timestamp: 0, selectedSegment: null, formId: '', segments: [], videoId }]);
-        setFormErrors([]);
-      }
-    } catch {
-      console.error('Submit error');
-    } finally {
-      setSubmitting(false);
-    }
+  const hasErrors = errors.some(e => e.formId || e.selectedSegment || e.segmentConflict);
+  if (hasErrors) {
+    setSubmitting(false);
+    return;
+  }
+
+  const payload = {
+    videoId,
+    selections: forms.map(f => ({
+      timestamp: f.timestamp,
+      formId: f.formId,
+      selectedSegment: f.segments[f.selectedSegment]
+    }))
   };
+
+  try {
+    const res = await fetch('http://localhost:5000/api/timestamp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      setSuccess(true);
+      setForms([{ timestamp: 0, selectedSegment: null, formId: '', segments: [], videoId }]);
+      setFormErrors([]);
+    }
+  } catch {
+    console.error("Submit failed");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
+
 
   // Edit/Delete functions
   const fetchForms = async () => {

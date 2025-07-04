@@ -58,7 +58,7 @@ const TimestampForm = ({
 
       {!isEditMode && (
         <>
-          <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#6e8efb' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '0.5rem', color: '#6e8efb', marginTop: '1rem' }}>
             Closest Segments (Select One):
           </div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -79,9 +79,16 @@ const TimestampForm = ({
               </li>
             ))}
           </ul>
+
+  
           {formErrors[formIndex]?.selectedSegment && (
-            <div style={{ color: 'red', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+            <div style={{ color: 'red', fontSize: '0.9rem', marginBottom: '0.3rem' }}>
               Please select a segment.
+            </div>
+          )}
+          {formErrors[formIndex]?.segmentConflict && (
+            <div style={{ color: 'red', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+              A Lock already exists for this segment or it's selected more than once..
             </div>
           )}
         </>
@@ -99,7 +106,7 @@ const TimestampForm = ({
           Please enter a form ID.
         </div>
       )}
-      
+
       {!isEditMode && (
         <button
           type="button"
@@ -122,4 +129,4 @@ const TimestampForm = ({
   );
 };
 
-export default TimestampForm; 
+export default TimestampForm;

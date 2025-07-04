@@ -56,7 +56,6 @@ exports.submitTimestamp = async (req, res) => {
 
 exports.getClosestSegments = async (req, res) => {
   const { videoId, timestamp } = req.body;
-//   console.log(videoId);
   const video = await Movie.findById(videoId);
   if (!video)
     return res.status(404).json({ success: false, message: "Video not found" });
@@ -88,7 +87,7 @@ exports.getClosestSegments = async (req, res) => {
   res.json({ success: true, segments: closest });
 };
 
-// Get all forms (selections) for a video
+
 exports.getFormsForVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -103,7 +102,6 @@ exports.getFormsForVideo = async (req, res) => {
   }
 };
 
-// Update a form (selection) by formId
 exports.updateFormById = async (req, res) => {
   try {
     const { formId } = req.params;
@@ -126,7 +124,6 @@ exports.updateFormById = async (req, res) => {
   }
 };
 
-// Delete a form (selection) by formId
 exports.deleteFormById = async (req, res) => {
   try {
     const { formId } = req.params;
@@ -146,4 +143,6 @@ exports.deleteFormById = async (req, res) => {
     console.error('Error deleting form:', err.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
+
 };
+
