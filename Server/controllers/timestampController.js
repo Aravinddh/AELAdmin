@@ -87,7 +87,6 @@ exports.getClosestSegments = async (req, res) => {
   res.json({ success: true, segments: closest });
 };
 
-
 exports.getFormsForVideo = async (req, res) => {
   try {
     const { videoId } = req.params;
@@ -143,6 +142,5 @@ exports.deleteFormById = async (req, res) => {
     console.error('Error deleting form:', err.message);
     return res.status(500).json({ success: false, message: 'Server error' });
   }
-
 };
 

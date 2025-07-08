@@ -12,9 +12,20 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     axios.get(`${BASE_URL}/api/videos`) 
-      .then(res => setMovies(res.data))
+      .then(res => {
+        console.log('HomeScreen - Videos received:', res.data);
+        console.log('HomeScreen - First movie structure:', res.data[0]);
+        setMovies(res.data);
+      })
       .catch(err => console.error('Error fetching videos:', err));
   }, []);
+
+  const handleMoviePress = (movie) => {
+    console.log('HomeScreen - Movie pressed:', movie);
+    console.log('HomeScreen - movieId being passed:', movie.id);
+    console.log('HomeScreen - movieId type:', typeof movie.id);
+    navigation.navigate('MoviePlayer', { movieId: movie.id });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
@@ -30,7 +41,7 @@ export default function HomeScreen({ navigation }) {
               key={movie.id}
               title={movie.title}
               thumbnail={movie.thumbnail}
-              onPress={() => navigation.navigate('MoviePlayer', { movieId: movie.id })}
+              onPress={() => handleMoviePress(movie)}
             />
           ))}
         </ScrollView>
