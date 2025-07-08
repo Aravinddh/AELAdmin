@@ -8,8 +8,6 @@ const TimestampSubmission = require("../models/Submission");
 exports.submitTimestamp = async (req, res) => {
   try {
     const { videoId, selections } = req.body;
-    console.log(selections);
-
     const video = await Movie.findById(videoId);
     if (!video) {
       return res.status(404).json({ success: false, message: "Video not found" });
